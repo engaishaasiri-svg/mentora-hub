@@ -4,27 +4,32 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
+import logoUrl from "../assets/mentora-logo.png?url";
+import { AuthProvider, useAuth } from "../lib/auth";
+import { NotificationsProvider } from "../lib/notifications";
+import { NotificationsMenu } from "../components/NotificationsMenu";
+import { ProfileMenu } from "../components/ProfileMenu";
+import { AiChat } from "../components/AiChat";
+import { PillNav } from "../components/PillNav";
+import { Login } from "../components/Login";
 
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">الصفحة غير موجودة</h2>
         <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
+          <Link to="/" className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+            العودة للرئيسية
           </Link>
         </div>
       </div>
@@ -35,33 +40,16 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Try again
-          </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
-          </a>
-        </div>
+        <h1 className="text-xl font-semibold text-foreground">حدث خطأ ما</h1>
+        <button
+          onClick={() => { router.invalidate(); reset(); }}
+          className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          إعادة المحاولة
+        </button>
       </div>
     </div>
   );
@@ -72,20 +60,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Mentora — نوجّهك اليوم.. لنجاحك غداً." },
+      { name: "description", content: "Mentora: منصة تعليمية ذكية لمتابعة الأداء والمسار المهني للطلاب والمرشدين." },
+      { property: "og:title", content: "Mentora — نوجّهك اليوم.. لنجاحك غداً." },
+      { name: "twitter:title", content: "Mentora — نوجّهك اليوم.. لنجاحك غداً." },
+      { property: "og:description", content: "Mentora: منصة تعليمية ذكية لمتابعة الأداء والمسار المهني للطلاب والمرشدين." },
+      { name: "twitter:description", content: "Mentora: منصة تعليمية ذكية لمتابعة الأداء والمسار المهني للطلاب والمرشدين." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2c900714-2691-4291-ad87-faefd75e62e0/id-preview-70dcb13c--7d298a39-49ba-4123-8f22-41319d0bbde3.lovable.app-1778337109179.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2c900714-2691-4291-ad87-faefd75e62e0/id-preview-70dcb13c--7d298a39-49ba-4123-8f22-41319d0bbde3.lovable.app-1778337109179.png" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" },
     ],
   }),
   shellComponent: RootShell,
@@ -96,7 +86,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ar" dir="rtl">
       <head>
         <HeadContent />
       </head>
@@ -108,12 +98,99 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+
+function NavBar() {
+  const { user } = useAuth();
+  return (
+    <header className="sticky top-0 z-30 bg-nav text-nav-foreground shadow-[var(--shadow-elegant)]">
+      <div className="max-w-6xl mx-auto flex items-center justify-between gap-3 px-4 py-3">
+        <Link to={user?.role === "mentor" ? "/mentor" : "/"} className="flex items-center gap-2 shrink-0">
+          <img src={logoUrl} alt="Mentora" className="h-9 w-9 object-contain bg-white rounded-lg p-1" />
+          <span className="text-xl font-black bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">Mentora</span>
+        </Link>
+        <div className="flex items-center gap-1 shrink-0">
+          <NotificationsMenu />
+          <ProfileMenu />
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function AppShell() {
+  const { user } = useAuth();
+  const isMentor = user?.role === "mentor";
+  return (
+    <NotificationsProvider role={user!.role}>
+      <div className="min-h-screen bg-background">
+        <NavBar />
+        <div className="max-w-5xl mx-auto px-4 pt-6">
+          <div className="flex items-center gap-4 mb-4">
+            <img src={logoUrl} alt="Mentora" className="h-14 w-14 object-contain bg-white rounded-2xl p-2 shadow-[var(--shadow-soft)]" />
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl truncate">
+                مرحبًا {user?.name || (isMentor ? "مرشدنا" : "بك")} 👋
+              </h1>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {isMentor ? "تابع طلابك ووجّههم لأفضل النتائج." : "جاهزين نواصل رحلتك نحو التميّز؟"}
+              </p>
+            </div>
+          </div>
+          <PillNav />
+        </div>
+        <main className="max-w-5xl mx-auto px-4 py-6 pb-28">
+          <Outlet />
+        </main>
+        <AiChat />
+      </div>
+    </NotificationsProvider>
+  );
+}
+
+function RoleRedirect() {
+  const { user } = useAuth();
+  const router = useRouter();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => {
+    if (!user) return;
+    const onMentorRoute = pathname.startsWith("/mentor");
+    if (user.role === "mentor" && !onMentorRoute) {
+      router.navigate({ to: "/mentor" });
+    } else if (user.role === "student" && onMentorRoute) {
+      router.navigate({ to: "/" });
+    }
+  }, [user, pathname, router]);
+
+  return null;
+}
+
+function Gate() {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="h-10 w-10 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+  if (!user) return <Login />;
+  return (
+    <>
+      <RoleRedirect />
+      <AppShell />
+    </>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <AuthProvider>
+        <Gate />
+        <Toaster position="top-center" richColors closeButton />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
