@@ -6,10 +6,12 @@
 نظام مرشد ذكي يكتشف التعثر مبكرًا ويوجه الطالب أكاديمياً ومهنياً نحو الجاهزية لسوق العمل.
 
 ### الوصف (Description)
-نظام Mentora هو منصة إرشادية تعتمد على تقنيات الذكاء الاصطناعي. ترتبط المنصة بأنظمة الجامعة وتقوم بتحليل بيانات الطلاب وأدائهم الدراسي بشكل مستمر، لتقديم توجيه مخصص يساعد في اكتشاف حالات التأخر الدراسي مبكراً.
+نظام Mentora هو منصة إرشادية تعتمد على تقنيات الذكاء الاصطناعي. ترتبط المنصة بأنظمة الجامعة وتقوم بتحليل بيانات الطلاب وأدائهم الدراسي بشكل مستمر، ويكتشف التعثر مبكرًا ويقدم خطة تعليمية للطالب لمعالجة التعثر وخبرة عملية مخصصة تساعده على النجاح والاستعداد لسوق العمل بما يتوافق مع رؤية 2030.
+
 
 ### المقدمة (Introduction)
 في ظل الاعتماد على النماذج التعليمية التقليدية التي لا تراعي الفروقات الفردية بين الطلاب، يبرز هذا النظام كحل مبتكر. فهو يقدم مسارات تعليمية وتوجيهات عملية مخصصة لكل طالب، مما يساعده على تحقيق النجاح الأكاديمي وبناء المهارات اللازمة ليكون جاهزاً لسوق العمل، تماشياً مع أهداف رؤية المملكة 2030.
+
 
 ### بيان المشكلة (Problem Statement)
 تم بناء هذا المشروع لحل مجموعة من التحديات في البيئة الجامعية:
@@ -47,7 +49,7 @@
 
 1. **استنساخ المستودع (Clone):**
    ```bash
-   git clone https://github.com/mentora3/my-learning-companion.git
+   git clone https://github.com/engaishaasiri-svg/mentora-hub.git
    ```
 
 2. **تثبيت مدير الحزم Bun (لمستخدمي Windows):**
@@ -71,6 +73,7 @@
    ```bash
    bun run build
    ```
+**ملاحظة: سيتم ربط الموقع مستقبلًا بقاعدة بيانات الجامعة بهدف تحليل بيانات الطلاب بشكل ذكي** 
 
 ---
 
@@ -80,7 +83,7 @@
 A smart mentoring system that detects academic stumbling early and guides the student academically and professionally towards readiness for the labor market.
 
 ### Description
-Mentora is an AI-powered educational platform integrated with university systems. It continuously analyzes students' academic data and performance to provide personalized guidance, helping to identify and address academic difficulties at an early stage.
+Mentora is an AI-powered educational platform integrated with university systems. It continuously analyzes students' academic data and performance to provide personalized guidance, It will detect academic difficulties early and provide students with personalized educational plans to address those challenges, along with tailored practical experiences that help them succeed and prepare for the job market in alignment with Vision 2030.
 
 ### Introduction
 With traditional educational models failing to accommodate individual student differences, Mentora emerges as an innovative solution. It offers customized learning paths and practical guidance to help students achieve academic success and acquire the skills needed for the job market, aligning with the goals of Saudi Vision 2030.
@@ -120,7 +123,7 @@ Follow these steps to set up and run the project on your local machine:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/mentora3/my-learning-companion.git
+   git clone https://github.com/engaishaasiri-svg/mentora-hub.git
    ```
 
 2. **Install Bun (For Windows Users)**:
@@ -144,3 +147,4 @@ Follow these steps to set up and run the project on your local machine:
    ```bash
    bun run build
    ```
+   **Note: in the future the website will be integrated with the university database to intelligently analyze students data**
