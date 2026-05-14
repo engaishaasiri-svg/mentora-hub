@@ -1,15 +1,17 @@
 import { useState } from "react";
-import { Home, Users, ClipboardList, BarChart3, Plus, Trash2 } from "lucide-react";
+import { Home, Users, ClipboardList, BarChart3, Plus, Trash2, MessageSquare, Send, Video } from "lucide-react";
 import { Shell, type NavItem } from "./Shell";
 import { actions, useStore } from "./store";
 import {
   TEAL, NAVY, PURPLE, DANGER, WARN, SUCCESS, MUTED, BORDER, FF,
   card, Donut, Bar, Chip, StatCard, SectionTitle, Btn,
 } from "./shared";
+import { MeetingCard, MeetingForm } from "./StudentPortal";
 
 const nav: NavItem[] = [
   { key: "home", label: "نظرة عامة", icon: <Home size={18} /> },
   { key: "students", label: "الطلاب", icon: <Users size={18} /> },
+  { key: "messages", label: "محادثات الطلاب", icon: <MessageSquare size={18} /> },
   { key: "planning", label: "إنشاء خطة", icon: <ClipboardList size={18} /> },
   { key: "insights", label: "تحليلات المجموعة", icon: <BarChart3 size={18} /> },
 ];
@@ -26,15 +28,69 @@ const STUDENTS = [
 export function MentorPortal() {
   const [page, setPage] = useState("home");
   const titles: Record<string, string> = {
-    home: "لوحة المرشد", students: "إدارة الطلاب", planning: "إنشاء خطة دراسية", insights: "تحليلات المجموعة",
+    home: "لوحة المرشد", students: "إدارة الطلاب", messages: "محادثات الطلاب",
+    planning: "إنشاء خطة دراسية", insights: "تحليلات المجموعة",
   };
   return (
     <Shell themeColor={NAVY} navItems={nav} current={page} onNav={setPage} title={titles[page]}>
       {page === "home" && <MentorHome />}
       {page === "students" && <Students />}
+      {page === "messages" && <Messages />}
       {page === "planning" && <Planning />}
       {page === "insights" && <Insights />}
     </Shell>
+  );
+}
+
+function Messages() {
+  const msgs = useStore((s) => s.mentorChat);
+  const [input, setInput] = useState("");
+  const [showMeet, setShowMeet] = useState(false);
+  const send = () => {
+    if (!input.trim()) return;
+    actions.sendMentorChat(input.trim(), "mentor");
+    setInput("");
+  };
+  return (
+    <div style={{ ...card, padding: 0, overflow: "hidden" }}>
+      <div style={{ background: NAVY, color: "#fff", padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#fff", color: NAVY, display: "grid", placeItems: "center", fontWeight: 700 }}>أ</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700 }}>أحمد محمد</div>
+          <div style={{ fontSize: 11, opacity: .8 }}>طالب • متصل</div>
+        </div>
+        <button onClick={() => setShowMeet(true)} style={{
+          background: "rgba(255,255,255,.2)", border: "none", color: "#fff", borderRadius: 10,
+          padding: "8px 10px", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: FF, fontSize: 12,
+        }}>
+          <Video size={14} /> اجتماع
+        </button>
+      </div>
+      <div style={{ padding: 12, height: 380, overflowY: "auto", background: "#f9fafb" }}>
+        {msgs.map((m) => (
+          <div key={m.id} style={{ display: "flex", justifyContent: m.from === "mentor" ? "flex-start" : "flex-end", marginBottom: 8 }}>
+            {m.meeting ? <MeetingCard msg={m} role="mentor" /> : <div style={{
+              maxWidth: "75%", padding: "8px 12px", borderRadius: 14,
+              background: m.from === "mentor" ? "#fff" : NAVY, color: m.from === "mentor" ? NAVY : "#fff",
+              fontSize: 13, border: m.from === "mentor" ? `1px solid ${BORDER}` : "none",
+            }}>{m.text}</div>}
+          </div>
+        ))}
+      </div>
+      <div style={{ padding: 10, borderTop: `1px solid ${BORDER}`, display: "flex", gap: 6 }}>
+        <input value={input} onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && send()}
+          placeholder="اكتب رسالة للطالب..." style={{
+            flex: 1, padding: "10px 12px", borderRadius: 10, border: `1px solid ${BORDER}`,
+            fontFamily: FF, fontSize: 13, outline: "none",
+          }} />
+        <button onClick={send} style={{
+          background: NAVY, color: "#fff", border: "none", borderRadius: 10, padding: "0 14px",
+          cursor: "pointer", display: "grid", placeItems: "center",
+        }}><Send size={16} /></button>
+      </div>
+      {showMeet && <MeetingForm role="mentor" onClose={() => setShowMeet(false)} />}
+    </div>
   );
 }
 
