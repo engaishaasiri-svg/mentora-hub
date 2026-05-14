@@ -13,7 +13,6 @@ import { Route as SkillsRouteImport } from './routes/skills'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as RemedialRouteImport } from './routes/remedial'
 import { Route as PlanRouteImport } from './routes/plan'
-import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as MentorRouteImport } from './routes/mentor'
 import { Route as CareerRouteImport } from './routes/career'
 import { Route as IndexRouteImport } from './routes/index'
@@ -39,11 +38,6 @@ const RemedialRoute = RemedialRouteImport.update({
 const PlanRoute = PlanRouteImport.update({
   id: '/plan',
   path: '/plan',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MessagesRoute = MessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MentorRoute = MentorRouteImport.update({
@@ -81,7 +75,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/career': typeof CareerRoute
   '/mentor': typeof MentorRouteWithChildren
-  '/messages': typeof MessagesRoute
   '/plan': typeof PlanRoute
   '/remedial': typeof RemedialRoute
   '/reports': typeof ReportsRoute
@@ -93,7 +86,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/career': typeof CareerRoute
-  '/messages': typeof MessagesRoute
   '/plan': typeof PlanRoute
   '/remedial': typeof RemedialRoute
   '/reports': typeof ReportsRoute
@@ -107,7 +99,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/career': typeof CareerRoute
   '/mentor': typeof MentorRouteWithChildren
-  '/messages': typeof MessagesRoute
   '/plan': typeof PlanRoute
   '/remedial': typeof RemedialRoute
   '/reports': typeof ReportsRoute
@@ -122,7 +113,6 @@ export interface FileRouteTypes {
     | '/'
     | '/career'
     | '/mentor'
-    | '/messages'
     | '/plan'
     | '/remedial'
     | '/reports'
@@ -134,7 +124,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/career'
-    | '/messages'
     | '/plan'
     | '/remedial'
     | '/reports'
@@ -147,7 +136,6 @@ export interface FileRouteTypes {
     | '/'
     | '/career'
     | '/mentor'
-    | '/messages'
     | '/plan'
     | '/remedial'
     | '/reports'
@@ -161,7 +149,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CareerRoute: typeof CareerRoute
   MentorRoute: typeof MentorRouteWithChildren
-  MessagesRoute: typeof MessagesRoute
   PlanRoute: typeof PlanRoute
   RemedialRoute: typeof RemedialRoute
   ReportsRoute: typeof ReportsRoute
@@ -196,13 +183,6 @@ declare module '@tanstack/react-router' {
       path: '/plan'
       fullPath: '/plan'
       preLoaderRoute: typeof PlanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/messages': {
-      id: '/messages'
-      path: '/messages'
-      fullPath: '/messages'
-      preLoaderRoute: typeof MessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mentor': {
@@ -269,7 +249,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CareerRoute: CareerRoute,
   MentorRoute: MentorRouteWithChildren,
-  MessagesRoute: MessagesRoute,
   PlanRoute: PlanRoute,
   RemedialRoute: RemedialRoute,
   ReportsRoute: ReportsRoute,
@@ -278,3 +257,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

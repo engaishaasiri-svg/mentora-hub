@@ -1,5 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { consumeInbox, useMessagingTick } from "./messaging";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
 export type Notification = {
   id: string;
@@ -34,13 +33,6 @@ const Ctx = createContext<NCtx>({} as NCtx);
 
 export function NotificationsProvider({ children, role }: { children: ReactNode; role: "student" | "mentor" }) {
   const [list, setList] = useState<Notification[]>(role === "mentor" ? mentorSeed : studentSeed);
-  const tick = useMessagingTick();
-
-  useEffect(() => {
-    const incoming = consumeInbox(role);
-    if (incoming.length === 0) return;
-    setList((l) => [...incoming, ...l]);
-  }, [role, tick]);
 
   const value: NCtx = {
     notifications: list,
