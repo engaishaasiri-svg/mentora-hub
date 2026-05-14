@@ -136,4 +136,61 @@ export const actions = {
   sendMentorChat(text: string, from: "user" | "mentor" = "user") {
     setState((s) => ({ ...s, mentorChat: [...s.mentorChat, { id: "m" + Date.now(), from, text }] }));
   },
+  requestMeeting(payload: { title: string; date: string; time: string; requestedBy: "student" | "mentor" }) {
+    const code = Math.random().toString(36).slice(2, 6) + "-" + Math.random().toString(36).slice(2, 6) + "-" + Math.random().toString(36).slice(2, 5);
+    const meeting: Meeting = {
+      id: "mt" + Date.now(),
+      title: payload.title || "اجتماع إرشادي",
+      date: payload.date,
+      time: payload.time,
+      link: `https://meet.google.com/${code}`,
+      status: "pending",
+      requestedBy: payload.requestedBy,
+    };
+    const from = payload.requestedBy === "student" ? "user" : "mentor";
+    const msg: ChatMsg = {
+      id: "m" + Date.now(),
+      from,
+      text: `📅 طلب اجتماع: ${meeting.title} — ${meeting.date} ${meeting.time}`,
+      meeting,
+    };
+    setState((s) => ({ ...s, mentorChat: [...s.mentorChat, msg] }));
+    const who = payload.requestedBy === "student" ? "الطالب" : "المرشد";
+    setState((s) => ({
+      ...s,
+      notifications: [{
+        id: "n" + Date.now(),
+        title: "طلب اجتماع جديد 📅",
+        body: `${who} طلب اجتماع: ${meeting.title} (${meeting.date} ${meeting.time})`,
+        time: "الآن", read: false, type: "info",
+      }, ...s.notifications],
+    }));
+    return meeting.id;
+  },
+  respondMeeting(meetingId: string, accept: boolean) {
+    setState((s) => ({
+      ...s,
+      mentorChat: s.mentorChat.map((m) => m.meeting?.id === meetingId
+        ? { ...m, meeting: { ...m.meeting, status: accept ? "accepted" : "declined" } }
+        : m),
+    }));
+    const meeting = state.mentorChat.find((m) => m.meeting?.id === meetingId)?.meeting;
+    const sysMsg: ChatMsg = {
+      id: "m" + Date.now(),
+      from: accept ? "mentor" : "user",
+      text: accept
+        ? `✅ تم قبول الاجتماع. الرابط: ${meeting?.link}`
+        : `❌ تم رفض موعد الاجتماع. اقترح موعداً آخر.`,
+    };
+    setState((s) => ({ ...s, mentorChat: [...s.mentorChat, sysMsg] }));
+    setState((s) => ({
+      ...s,
+      notifications: [{
+        id: "n" + Date.now(),
+        title: accept ? "تم قبول الاجتماع ✅" : "تم رفض الاجتماع",
+        body: accept ? `الاجتماع مؤكد — ${meeting?.date} ${meeting?.time}` : "يرجى اقتراح موعد بديل",
+        time: "الآن", read: false, type: accept ? "success" : "warn",
+      }, ...s.notifications],
+    }));
+  },
 };
