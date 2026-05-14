@@ -6,7 +6,17 @@ export type Session = { role: Role; name: string } | null;
 
 export type Notif = { id: string; title: string; body: string; time: string; read: boolean; type: "info" | "warn" | "success" };
 export type Task = { id: string; title: string; priority: "high" | "medium" | "low"; status: "pending" | "in_progress" | "done"; assignee?: string; due?: string };
-export type ChatMsg = { id: string; from: "user" | "ai" | "mentor"; text: string };
+export type MeetingStatus = "pending" | "accepted" | "declined";
+export type Meeting = {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  link: string;
+  status: MeetingStatus;
+  requestedBy: "student" | "mentor";
+};
+export type ChatMsg = { id: string; from: "user" | "ai" | "mentor"; text: string; meeting?: Meeting };
 
 type State = {
   session: Session;
