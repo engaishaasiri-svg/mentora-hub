@@ -8,12 +8,14 @@ const studentLinks = [
   { to: "/remedial", label: "الخطة العلاجية" },
   { to: "/career", label: "المسار المهني" },
   { to: "/reports", label: "تقاريري" },
+  { to: "/messages", label: "محادثة المرشد" },
 ] as const;
 
 const mentorLinks = [
   { to: "/mentor", label: "لوحتي", exact: true },
   { to: "/mentor/students", label: "الطلاب" },
   { to: "/mentor/planning", label: "التخطيط" },
+  { to: "/messages", label: "محادثة الطلاب" },
 ] as const;
 
 export function PillNav() {
