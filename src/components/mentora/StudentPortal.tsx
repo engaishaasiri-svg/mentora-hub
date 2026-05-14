@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   Home, BookOpen, BarChart3, Target, MessageSquare, GraduationCap, Briefcase,
-  AlertTriangle, TrendingUp, CheckCircle2, Circle, Clock, Send,
+  AlertTriangle, TrendingUp, CheckCircle2, Circle, Clock, Send, Video, Calendar, ExternalLink,
 } from "lucide-react";
 import { Shell, type NavItem } from "./Shell";
 import { actions, useStore } from "./store";
@@ -310,6 +310,7 @@ function Reports() {
 function MentorChat() {
   const msgs = useStore((s) => s.mentorChat);
   const [input, setInput] = useState("");
+  const [showMeet, setShowMeet] = useState(false);
   const send = () => {
     if (!input.trim()) return;
     actions.sendMentorChat(input.trim(), "user");
@@ -320,19 +321,25 @@ function MentorChat() {
     <div style={{ ...card, padding: 0, overflow: "hidden" }}>
       <div style={{ background: TEAL, color: "#fff", padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#fff", color: TEAL, display: "grid", placeItems: "center", fontWeight: 700 }}>س</div>
-        <div>
+        <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700 }}>د. سارة العتيبي</div>
           <div style={{ fontSize: 11, opacity: .8 }}>مرشدتك الأكاديمية • متصل</div>
         </div>
+        <button onClick={() => setShowMeet(true)} title="طلب اجتماع" style={{
+          background: "rgba(255,255,255,.2)", border: "none", color: "#fff", borderRadius: 10,
+          padding: "8px 10px", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: FF, fontSize: 12,
+        }}>
+          <Video size={14} /> اجتماع
+        </button>
       </div>
       <div style={{ padding: 12, height: 360, overflowY: "auto", background: "#f9fafb" }}>
         {msgs.map((m) => (
           <div key={m.id} style={{ display: "flex", justifyContent: m.from === "user" ? "flex-start" : "flex-end", marginBottom: 8 }}>
-            <div style={{
+            {m.meeting ? <MeetingCard msg={m} role="student" /> : <div style={{
               maxWidth: "75%", padding: "8px 12px", borderRadius: 14,
               background: m.from === "user" ? "#fff" : TEAL, color: m.from === "user" ? NAVY : "#fff",
               fontSize: 13, border: m.from === "user" ? `1px solid ${BORDER}` : "none",
-            }}>{m.text}</div>
+            }}>{m.text}</div>}
           </div>
         ))}
       </div>
@@ -348,9 +355,103 @@ function MentorChat() {
           cursor: "pointer", display: "grid", placeItems: "center",
         }}><Send size={16} /></button>
       </div>
+      {showMeet && <MeetingForm role="student" onClose={() => setShowMeet(false)} />}
     </div>
   );
 }
+
+export function MeetingCard({ msg, role }: { msg: { from: string; text: string; meeting?: any }; role: "student" | "mentor" }) {
+  const m = msg.meeting!;
+  const isMine = msg.from === (role === "student" ? "user" : "mentor");
+  const canRespond = m.status === "pending" && m.requestedBy !== (role === "student" ? "student" : "mentor");
+  const statusColor = m.status === "accepted" ? SUCCESS : m.status === "declined" ? DANGER : WARN;
+  const statusLabel = m.status === "accepted" ? "مقبول" : m.status === "declined" ? "مرفوض" : "بانتظار الرد";
+  return (
+    <div style={{
+      maxWidth: "85%", padding: 12, borderRadius: 14, background: "#fff",
+      border: `1.5px solid ${PURPLE}`, fontSize: 13, color: NAVY,
+      boxShadow: "0 4px 12px rgba(139,92,246,.12)",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, color: PURPLE, fontWeight: 700, marginBottom: 6 }}>
+        <Video size={16} /> طلب اجتماع
+      </div>
+      <div style={{ fontWeight: 700, marginBottom: 4 }}>{m.title}</div>
+      <div style={{ display: "flex", gap: 10, color: MUTED, fontSize: 12, marginBottom: 8 }}>
+        <span><Calendar size={12} style={{ verticalAlign: "middle" }} /> {m.date}</span>
+        <span><Clock size={12} style={{ verticalAlign: "middle" }} /> {m.time}</span>
+      </div>
+      <Chip label={statusLabel} color={statusColor} />
+      {m.status === "accepted" && (
+        <a href={m.link} target="_blank" rel="noreferrer" style={{
+          marginTop: 8, display: "flex", alignItems: "center", gap: 6, color: PURPLE,
+          textDecoration: "none", fontWeight: 700, fontSize: 13,
+        }}>
+          <ExternalLink size={14} /> الانضمام إلى Google Meet
+        </a>
+      )}
+      {canRespond && (
+        <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
+          <Btn size="sm" color={SUCCESS} onClick={() => actions.respondMeeting(m.id, true)}>قبول</Btn>
+          <Btn size="sm" color={DANGER} variant="outline" onClick={() => actions.respondMeeting(m.id, false)}>رفض</Btn>
+        </div>
+      )}
+      {!canRespond && m.status === "pending" && isMine && (
+        <div style={{ marginTop: 6, fontSize: 11, color: MUTED }}>بانتظار رد الطرف الآخر…</div>
+      )}
+    </div>
+  );
+}
+
+export function MeetingForm({ role, onClose }: { role: "student" | "mentor"; onClose: () => void }) {
+  const [title, setTitle] = useState("جلسة إرشاد أكاديمي");
+  const today = new Date();
+  const tmr = new Date(today.getTime() + 86400000).toISOString().slice(0, 10);
+  const [date, setDate] = useState(tmr);
+  const [time, setTime] = useState("14:00");
+  const submit = () => {
+    actions.requestMeeting({ title, date, time, requestedBy: role });
+    onClose();
+  };
+  return (
+    <div onClick={onClose} style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,.5)", zIndex: 80,
+      display: "grid", placeItems: "center", padding: 16,
+    }}>
+      <div onClick={(e) => e.stopPropagation()} style={{
+        background: "#fff", borderRadius: 16, padding: 18, width: "100%", maxWidth: 380,
+        fontFamily: FF,
+      }}>
+        <h3 style={{ margin: "0 0 12px", color: NAVY, display: "flex", gap: 8, alignItems: "center" }}>
+          <Video size={18} color={PURPLE} /> طلب اجتماع جديد
+        </h3>
+        <label style={{ fontSize: 12, color: MUTED }}>موضوع الاجتماع</label>
+        <input value={title} onChange={(e) => setTitle(e.target.value)} style={modalInp} />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 8 }}>
+          <div>
+            <label style={{ fontSize: 12, color: MUTED }}>التاريخ</label>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={modalInp} />
+          </div>
+          <div>
+            <label style={{ fontSize: 12, color: MUTED }}>الوقت</label>
+            <input type="time" value={time} onChange={(e) => setTime(e.target.value)} style={modalInp} />
+          </div>
+        </div>
+        <p style={{ fontSize: 11, color: MUTED, marginTop: 10 }}>
+          سيتم إنشاء رابط Google Meet تلقائياً عند قبول الطرف الآخر.
+        </p>
+        <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end" }}>
+          <Btn size="sm" color={MUTED} variant="outline" onClick={onClose}>إلغاء</Btn>
+          <Btn size="sm" color={PURPLE} onClick={submit}>إرسال الطلب</Btn>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const modalInp: React.CSSProperties = {
+  width: "100%", padding: "10px 12px", borderRadius: 10, border: `1px solid ${BORDER}`,
+  fontFamily: FF, fontSize: 14, outline: "none", boxSizing: "border-box", background: "#fff", marginTop: 4,
+};
 
 function Courses() {
   const courses = [
