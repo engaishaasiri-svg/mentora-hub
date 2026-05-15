@@ -3,8 +3,7 @@
 ## 🇸🇦 القسم العربي
 
 ### اسم المشروع (Project Title)
-نظام مرشد ذكي يكتشف التعثر مبكرًا ويوجه الطالب أكاديمياً ومهنياً نحو الجاهزية لسوق العمل.
-
+نظام مرشد ذكي يكتشف التعثر الأكاديمي استباقيًا، ويبني خططًا علاجية وتصحيحية مخصصة لكل طالب، مع توجيهه أكاديميًا ومهنيًا ليتوافق مع رؤية 2030
 ### وصف المشروع (Project Description)
 Mentora هو مرشد أكاديمي وتقني ذكي مدعوم بالذكاء الاصطناعي، مرتبط بأنظمة وبيانات الجامعة لتحليل توصيف المقررات ونواتج التعلم واستخراج المهارات الأساسية المطلوبة، ثم اكتشاف التعثر الأكاديمي استباقيًا قبل حدوثه.
 
@@ -86,7 +85,7 @@ Mentora يدعم الاستدامة في التعليم من خلال:
 
 1. **استنساخ المستودع (Clone):**
    ```bash
-   git clone https://github.com/mentora3/my-learning-companion.git
+   git clone https://github.com/engaishaasiri-svg/mentora-hub.git
    ```
 
 2. **تثبيت مدير الحزم Bun (لمستخدمي Windows):**
@@ -200,7 +199,7 @@ Follow these steps to set up and run the project on your local machine:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/mentora3/my-learning-companion.git
+   git clone https://github.com/engaishaasiri-svg/mentora-hub.git
    ```
 
 2. **Install Bun (For Windows Users)**:
